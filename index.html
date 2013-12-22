@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Examples</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.1/zepto.min.js"></script>
+    <script>
+      if (typeof $ === 'undefined') {
+        document.write(unescape('%3Cscript src="https://code.jquery.com/jquery-2.0.3.min.js" type="text/javascript"%3E%3C/script%3E'));
+      }
+    </script>
+    <script>
+      var makeSelect = function(name, firstItem, data) {
+        var select = $('<select />', { name: name, class: 'form_select' });
+        if (firstItem !== null) select.append('<option value="">' + firstItem + '</option>');
+        var isArray = (data instanceof Array);
+        $.each(data, function(a, b) {
+          if (isArray) {
+            select.append('<option value="' + b + '">' + b + '</option>');
+          } else {
+            select.append('<option value="' + a + '">' + a + '</option>');
+          }
+        });
+        return select;
+      };
+
+      var removeNextSelectAfter = function(element) {
+        $(element).parent().children().slice($(element).index() + 1).remove();
+      };
+
+      var makeSelector = function(selector, resultElement, districts) {
+        var province = makeSelect('province', '请选择地区', districts);
+        $(selector).append(province);
+
+        province.change(function() {
+          $('option[value=""]', this).remove();
+          removeNextSelectAfter(this);
+
+          var p = $(this).val();
+          var city = makeSelect('city', null, districts[p]);
+          city.data('province', p);
+          $(selector).append(city);
+
+          city.change(function() {
+            removeNextSelectAfter(this);
+            var p = $(this).data('province'), c = $(this).val();
+            if (districts[p][c] instanceof Array && districts[p][c].length > 0) {
+              var district = makeSelect('district', null, districts[p][c]);
+              $(selector).append(district);
+              district.change(function() {
+                var result = [];
+                $(this).parent().find('select').each(function() {
+                  result.push($(this).val());
+                });
+                $(resultElement).text(result.join());
+              }).trigger('change');;
+            }
+          }).trigger('change');
+        });
+
+        var defaults = $(selector).data('defaults');
+        if (defaults) defaults = defaults.split(',');
+        if (!defaults && Object.keys(districts).length == 1) defaults = [Object.keys(districts)[0]];
+        if (defaults[0]) {
+          province.val(defaults[0]).trigger('change');
+          if (defaults[1]) {
+            province.next('select').val(defaults[1]).trigger('change');
+            if (defaults[2]) {
+              province.next('select').next('select').val(defaults[2]).trigger('change');;
+            }
+          }
+        }
+      };
+
+      $(function() {
+        $.getJSON('./districts.tree.json', function(districts) {
+          makeSelector('#districtSelector_e1', '#result_e1', districts);
+        });
+
+        var customDistricts = {
+          "广东省佛山市": {
+            "顺德区": [ "大良街道", "容桂街道", "勒流街道", "伦教街道", "北滘镇", "乐从镇", "均安镇", "陈村镇", "杏坛镇", "龙江镇" ]
+          }
+        };
+        makeSelector('#districtSelector_e2', '#result_e2', customDistricts);
+      });
+    </script>
+    <style>
+      body {
+        font-family: monospace;
+      }
+      select {
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>districts.tree.json</h1>
+    <div id="districtSelector_e1" data-defaults="广东省,佛山市,顺德区"></div>
+    <div id="result_e1"></div>
+
+    <h1>custom</h1>
+    <div id="districtSelector_e2" data-defaults="广东省佛山市,顺德区,容桂街道"></div>
+    <div id="result_e2"></div>
+  </body>
+  </html>

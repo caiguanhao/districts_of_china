@@ -1,0 +1,28 @@
+{
+  "name": "districts_of_china",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A Chinese district selector.",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caiguanhao/districts_of_china.git"
+  },
+  "keywords": [
+    "china",
+    "chinese",
+    "districts",
+    "select",
+    "selector"
+  ],
+  "author": "Cai Guanhao <caiguanhao@gmail.com> (Choi Goon-ho)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/caiguanhao/districts_of_china/issues"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.2"
+  }
+}
