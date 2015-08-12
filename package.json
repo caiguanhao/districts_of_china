@@ -1,11 +1,8 @@
 {
   "name": "districts_of_china",
-  "private": true,
   "version": "1.0.0",
   "description": "A Chinese district selector.",
-  "scripts": {
-    "test": "grunt test"
-  },
+  "main": "districts.tree.json",
   "repository": {
     "type": "git",
     "url": "https://github.com/caiguanhao/districts_of_china.git"

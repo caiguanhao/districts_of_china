@@ -17,7 +17,7 @@ module.exports = function(grunt) {
           body += data;
         });
         res.on('end', function() {
-          var districts = new Function('var window = {};' + body + '; return tdist;')()
+          var districts = new Function('var window = {};\n' + body + ';\nreturn tdist;')();
           var json = JSON.stringify(districts, null, 2);
           json = json.replace(/\n\s{4}/g, ' ');
           json = json.replace(/\n\s{2}\]/g, ' ]');
@@ -76,7 +76,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('serve', 'serve example pages.', function() {
+  grunt.registerTask('serve', 'Serve example pages.', function() {
     this.async();
 
     var http = require('http');
