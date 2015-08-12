@@ -4,22 +4,21 @@ module.exports = function(grunt) {
     var finish = this.async();
 
     var fs = require('fs');
-    var http = require('http');
+    var https = require('https');
 
     var district_code_json = __dirname + '/districts.code.json';
     var district_tree_json = __dirname + '/districts.tree.json';
 
     var get_json = function(done) {
       grunt.log.writeln('Downloading districtselector.js...');
-      http.get("http://www.taobao.com/home/js/sys/districtselector.js", function(res) {
+      https.get('https://division-data.alicdn.com/simple/addr_3_001.js', function(res) {
         var body = '';
         res.on('data', function(data) {
           body += data;
         });
         res.on('end', function() {
-          var json = /TB\.form\.DistrictSelector\._tb_ds_data=(.+?);/.exec(body)[1];
-          json = JSON.parse(json);
-          json = JSON.stringify(json, null, 2);
+          var districts = new Function('var window = {};' + body + '; return tdist;')()
+          var json = JSON.stringify(districts, null, 2);
           json = json.replace(/\n\s{4}/g, ' ');
           json = json.replace(/\n\s{2}\]/g, ' ]');
           json += '\n';
@@ -77,7 +76,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('serve', 'Serve example pages.', function() {
+  grunt.registerTask('serve', 'serve example pages.', function() {
     this.async();
 
     var http = require('http');
